@@ -1,25 +1,43 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
+/*Retructuring by pulling out Component*/
+import { CardList } from './components/card-list/card-list.component.jsx';
+import { SearchBox } from './components/search-box/search-box.component.jsx';
 import './App.css';
 
-function App() {
-  return (
+class App extends Component {
+  constructor() {
+    super();
+    
+    this.state = {
+      monsters: [],
+      searchField:''
+    };
+  }
+  /*when react app mounts, we are pulling from api using lifestyle methods and then setting state of monsters to be equal to the array returned*/
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(response => response.json())
+    .then(users => this.setState({monsters: users }))
+  }
+  
+  render() {
+    
+    const {monsters, searchField} = this.state;
+    const filteredMonsters = monsters.filter(monster=>
+        monster.name.toLowerCase().includes(searchField.toLowerCase())
+        /*includes checks to see if string is included in other string*/
+      );
+    return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1> Monsters Roladex</h1>
+      <SearchBox 
+        placeholder='search monsters'
+        handleChange= {e => this.setState({searchField: e.target.value})}
+      />
+      <CardList monsters = {filteredMonsters}/>
     </div>
-  );
+  )
+ }
 }
 
 export default App;
